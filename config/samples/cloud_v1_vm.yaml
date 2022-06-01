@@ -1,0 +1,6 @@
+apiVersion: cloud.ibm.com/v1
+kind: VM
+metadata:
+  name: vm-sample
+spec:
+  name: "vm-1"

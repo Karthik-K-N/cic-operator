@@ -1,0 +1,16 @@
+domain: ibm.com
+layout:
+- go.kubebuilder.io/v3
+projectName: cic-operator
+repo: github.com/Karthik-K-N/cic-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: ibm.com
+  group: cloud
+  kind: VM
+  path: github.com/Karthik-K-N/cic-operator/api/v1
+  version: v1
+version: "3"
