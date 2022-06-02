@@ -40,17 +40,24 @@ spec:
           spec:
             description: VMSpec defines the desired state of VM
             properties:
-              name:
-                description: 'TODO: Discuss and add necessary field Name indicates
-                  the name of the VM to be created'
+              flavorID:
+                description: FlavorID indicates the flavor ID
+                type: string
+              imageID:
+                description: ImageID indicates the image ID
+                type: string
+              networkID:
+                description: NetworkID indicates network ID
                 type: string
             type: object
           status:
             description: VMStatus defines the observed state of VM
             properties:
+              id:
+                description: ID indicates the VM ID
+                type: string
               status:
-                description: 'TODO: Discuss and add necessary field Staus indicates
-                  the current status of the VM'
+                description: Status indicates the current status of the VM
                 type: string
             type: object
         type: object

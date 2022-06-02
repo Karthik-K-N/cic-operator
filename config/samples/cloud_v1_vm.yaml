@@ -3,4 +3,6 @@ kind: VM
 metadata:
   name: vm-sample
 spec:
-  name: "vm-1"
+  imageID: "c23321bd-8910-4326-8c58-0421e0d96176"
+  networkID: "5dbd428f-62ac-4183-9621-a59ef6979d15"
+  flavorID: "1"

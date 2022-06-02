@@ -22,16 +22,20 @@ import (
 
 // VMSpec defines the desired state of VM
 type VMSpec struct {
-	//	TODO: Discuss and add necessary field
-	// Name indicates the name of the VM to be created
-	Name string `json:"name,omitempty"`
+	// ImageID indicates the image ID
+	ImageID string `json:"imageID,omitempty"`
+	// NetworkID indicates network ID
+	NetworkID string `json:"networkID,omitempty"`
+	// FlavorID indicates the flavor ID
+	FlavorID string `json:"flavorID,omitempty"`
 }
 
 // VMStatus defines the observed state of VM
 type VMStatus struct {
-	//	TODO: Discuss and add necessary field
-	// Staus indicates the current status of the VM
+	// Status indicates the current status of the VM
 	Status string `json:"status,omitempty"`
+	// ID indicates the VM ID
+	ID string `json:"id,omitempty"`
 }
 
 //+kubebuilder:object:root=true
