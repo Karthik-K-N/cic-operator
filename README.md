@@ -2,7 +2,9 @@
 
 
 
-## Development
+## Development GUIDE
+
+### FOR LOCAL TESTING
 
 1. Create cluster using [kind](https://kind.sigs.k8s.io/)
 ```
@@ -53,4 +55,32 @@ $ kubectl create -f config/samples/cloud_v1_vm.yaml
 $ kubectl get vm
  NAME        STATUS
  vm-sample   ACTIVE
+```
+
+### FOR EASY DEPLOYMENT
+
+1. Fill in the username, password and certificate values in deployment file
+
+```
+$ vi config/deployment/deployment.yaml
+```
+
+3. Create the deployment 
+
+```
+$ kubectl create -f config/deployment/deployment.yaml
+```
+
+### To view the logs
+
+1. Make sure the pod is running and get the name of the pod
+
+```
+$ kubectl -n cic-operator-system get pods 
+```
+
+2. View the logs
+
+```
+kubectl -n cic-operator-system  logs -f cic-operator-controller-manager-9496c599d-99lrb
 ```
