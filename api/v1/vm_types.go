@@ -36,11 +36,14 @@ type VMStatus struct {
 	Status string `json:"status,omitempty"`
 	// ID indicates the VM ID
 	ID string `json:"id,omitempty"`
+	// IP indicates the VM IP addresses
+	IP string `json:"ip,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:printcolumn:name="Status",type="string",JSONPath=".status.status",description="Status of the VM"
+//+kubebuilder:printcolumn:name="IP",type="string",JSONPath=".status.ip",description="IP address of the VM"
 
 // VM is the Schema for the vms API
 type VM struct {

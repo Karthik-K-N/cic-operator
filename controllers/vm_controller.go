@@ -24,6 +24,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/utils/openstack/clientconfig"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -103,10 +104,23 @@ func (r *VMReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 	}
 	if server != nil {
 		klog.Infof("VM with name %s already exists in CIC not creating it again", vm.Name)
+		var needStatusUpdate bool
 		// update the status if not equal
 		if server.Status != vm.Status.Status {
-			vm.Status.Status = server.Status
-			if err := r.Status().Update(ctx, vm); err != nil {
+			needStatusUpdate = true
+		}
+		network, err := r.GetNetworkDetails(vm)
+		if err != nil {
+			klog.Error("Failed to get network details for vm %s error %v", vm.Name, err)
+			return ctrl.Result{}, err
+		}
+		ip := getVMIPAddress(server, network.Name)
+		if ip != "" && ip != vm.Status.IP {
+			needStatusUpdate = true
+		}
+		if needStatusUpdate {
+			err = r.UpdateStatus(vm, server, ip)
+			if err != nil {
 				klog.Error("Unable to update vm %s status", vm.Name)
 				return ctrl.Result{}, err
 			}
@@ -120,13 +134,13 @@ func (r *VMReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 		klog.Errorf("Create VM %s failed with error %v", vm.Name, err.Error())
 		return ctrl.Result{}, err
 	}
-	vm.Status.ID = server.ID
-	vm.Status.Status = server.Status
-	klog.Infof("Updating the status of vm %s", vm.Name)
-	if err := r.Status().Update(ctx, vm); err != nil {
+
+	err = r.UpdateStatus(vm, server, "")
+	if err != nil {
 		klog.Error("Unable to update vm %s status", vm.Name)
 		return ctrl.Result{}, err
 	}
+
 	klog.Infof("Successfully updated the vm %s status ", vm.Name)
 	return ctrl.Result{}, nil
 }
@@ -139,7 +153,7 @@ func (r *VMReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (r *VMReconciler) CreateVM(vm *cloudv1.VM) (*servers.Server, error) {
-	cicClient, err := getClient()
+	cicClient, err := getClient("compute")
 	if err != nil {
 		klog.Error(err)
 		return nil, err
@@ -162,7 +176,7 @@ func (r *VMReconciler) CreateVM(vm *cloudv1.VM) (*servers.Server, error) {
 }
 
 func (r *VMReconciler) DeleteVM(vm *cloudv1.VM) error {
-	cicClient, err := getClient()
+	cicClient, err := getClient("compute")
 	if err != nil {
 		return err
 	}
@@ -177,8 +191,20 @@ func (r *VMReconciler) DeleteVM(vm *cloudv1.VM) error {
 	return nil
 }
 
+func (r *VMReconciler) UpdateStatus(vm *cloudv1.VM, server *servers.Server, ip string) error {
+	vm.Status.ID = server.ID
+	vm.Status.Status = server.Status
+	vm.Status.IP = ip
+	klog.Infof("Updating the status of vm %s", vm.Name)
+	if err := r.Status().Update(context.Background(), vm); err != nil {
+		klog.Error("Unable to update vm %s status", vm.Name)
+		return err
+	}
+	return nil
+}
+
 func (r *VMReconciler) CheckVMExists(vm *cloudv1.VM) (*servers.Server, error) {
-	cicClient, err := getClient()
+	cicClient, err := getClient("compute")
 	if err != nil {
 		return nil, err
 	}
@@ -201,9 +227,32 @@ func (r *VMReconciler) CheckVMExists(vm *cloudv1.VM) (*servers.Server, error) {
 	return nil, nil
 }
 
-func getClient() (*gophercloud.ServiceClient, error) {
+func (r *VMReconciler) GetNetworkDetails(vm *cloudv1.VM) (*networks.Network, error) {
+	cicClient, err := getClient("network")
+	if err != nil {
+		return nil, err
+	}
+	opts := networks.ListOpts{ID: vm.Spec.NetworkID}
+
+	pager, err := networks.List(cicClient, opts).AllPages()
+	if err != nil {
+		return nil, err
+	}
+	allNetworks, err := networks.ExtractNetworks(pager)
+	if err != nil {
+		return nil, err
+	}
+	if len(allNetworks) != 1 {
+		errStr := fmt.Errorf("There exist 0 or more networks with same ID, Total Networks: %d ", len(allNetworks))
+		klog.Error(errStr)
+		return nil, errStr
+	}
+	return &allNetworks[0], nil
+}
+
+func getClient(serviceType string) (*gophercloud.ServiceClient, error) {
 	options := &clientconfig.ClientOpts{}
-	cicClient, err := clientconfig.NewServiceClient("compute", options)
+	cicClient, err := clientconfig.NewServiceClient(serviceType, options)
 	if err != nil {
 		return nil, err
 	}
@@ -230,4 +279,41 @@ func deleteServiceFinalizer(instance *cloudv1.VM) []string {
 		result = append(result, finalizer)
 	}
 	return result
+}
+
+//getVMIPAddress fetches and returns the IP address of the VM
+func getVMIPAddress(server *servers.Server, networkName string) string {
+	// Address format will be
+	//"addresses": {
+	//	"flat": [
+	//{
+	//"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:dc:bb:87",
+	//"OS-EXT-IPS:type": "fixed",
+	//"addr": "192.168.0.221",
+	//"version": 4
+	//}
+	//]
+	//},
+
+	if server.Addresses == nil {
+		klog.Infof("Address is nil for vm %s", server.Name)
+		return ""
+	}
+	val, ok := server.Addresses[networkName]
+	if !ok {
+		return ""
+	}
+	_, ok = val.([]interface{})
+	if !ok {
+		return ""
+	}
+	for _, networkAddresses := range server.Addresses[networkName].([]interface{}) {
+		address := networkAddresses.(map[string]interface{})
+		if address["OS-EXT-IPS:type"] == "fixed" {
+			if address["version"].(float64) == 4 {
+				return address["addr"].(string)
+			}
+		}
+	}
+	return ""
 }

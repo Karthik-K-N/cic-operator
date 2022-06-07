@@ -26,6 +26,10 @@ spec:
       jsonPath: .status.status
       name: Status
       type: string
+    - description: IP address of the VM
+      jsonPath: .status.ip
+      name: IP
+      type: string
     name: v1
     schema:
       openAPIV3Schema:
@@ -61,6 +65,9 @@ spec:
             properties:
               id:
                 description: ID indicates the VM ID
+                type: string
+              ip:
+                description: IP indicates the VM IP addresses
                 type: string
               status:
                 description: Status indicates the current status of the VM
