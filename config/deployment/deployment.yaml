@@ -21,56 +21,56 @@ spec:
     singular: vm
   scope: Namespaced
   versions:
-    - additionalPrinterColumns:
-        - description: Status of the VM
-          jsonPath: .status.status
-          name: Status
-          type: string
-      name: v1
-      schema:
-        openAPIV3Schema:
-          description: VM is the Schema for the vms API
-          properties:
-            apiVersion:
-              description: 'APIVersion defines the versioned schema of this representation
+  - additionalPrinterColumns:
+    - description: Status of the VM
+      jsonPath: .status.status
+      name: Status
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: VM is the Schema for the vms API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
               of an object. Servers should convert recognized schemas to the latest
               internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-              type: string
-            kind:
-              description: 'Kind is a string value representing the REST resource this
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
               object represents. Servers may infer this from the endpoint the client
               submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-              type: string
-            metadata:
-              type: object
-            spec:
-              description: VMSpec defines the desired state of VM
-              properties:
-                flavorID:
-                  description: FlavorID indicates the flavor ID
-                  type: string
-                imageID:
-                  description: ImageID indicates the image ID
-                  type: string
-                networkID:
-                  description: NetworkID indicates network ID
-                  type: string
-              type: object
-            status:
-              description: VMStatus defines the observed state of VM
-              properties:
-                id:
-                  description: ID indicates the VM ID
-                  type: string
-                status:
-                  description: Status indicates the current status of the VM
-                  type: string
-              type: object
-          type: object
-      served: true
-      storage: true
-      subresources:
-        status: {}
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: VMSpec defines the desired state of VM
+            properties:
+              flavorID:
+                description: FlavorID indicates the flavor ID
+                type: string
+              imageID:
+                description: ImageID indicates the image ID
+                type: string
+              networkID:
+                description: NetworkID indicates network ID
+                type: string
+            type: object
+          status:
+            description: VMStatus defines the observed state of VM
+            properties:
+              id:
+                description: ID indicates the VM ID
+                type: string
+              status:
+                description: Status indicates the current status of the VM
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
 status:
   acceptedNames:
     kind: ""
@@ -90,37 +90,37 @@ metadata:
   name: cic-operator-leader-election-role
   namespace: cic-operator-system
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
-  - apiGroups:
-      - coordination.k8s.io
-    resources:
-      - leases
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - create
-      - patch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -128,60 +128,60 @@ metadata:
   creationTimestamp: null
   name: cic-operator-manager-role
 rules:
-  - apiGroups:
-      - cloud.ibm.com
-    resources:
-      - vms
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - cloud.ibm.com
-    resources:
-      - vms/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - cloud.ibm.com
-    resources:
-      - vms/status
-    verbs:
-      - get
-      - patch
-      - update
+- apiGroups:
+  - cloud.ibm.com
+  resources:
+  - vms
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cloud.ibm.com
+  resources:
+  - vms/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - cloud.ibm.com
+  resources:
+  - vms/status
+  verbs:
+  - get
+  - patch
+  - update
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: cic-operator-metrics-reader
 rules:
-  - nonResourceURLs:
-      - /metrics
-    verbs:
-      - get
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: cic-operator-proxy-role
 rules:
-  - apiGroups:
-      - authentication.k8s.io
-    resources:
-      - tokenreviews
-    verbs:
-      - create
-  - apiGroups:
-      - authorization.k8s.io
-    resources:
-      - subjectaccessreviews
-    verbs:
-      - create
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -193,9 +193,9 @@ roleRef:
   kind: Role
   name: cic-operator-leader-election-role
 subjects:
-  - kind: ServiceAccount
-    name: cic-operator-controller-manager
-    namespace: cic-operator-system
+- kind: ServiceAccount
+  name: cic-operator-controller-manager
+  namespace: cic-operator-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -206,9 +206,9 @@ roleRef:
   kind: ClusterRole
   name: cic-operator-manager-role
 subjects:
-  - kind: ServiceAccount
-    name: cic-operator-controller-manager
-    namespace: cic-operator-system
+- kind: ServiceAccount
+  name: cic-operator-controller-manager
+  namespace: cic-operator-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -219,9 +219,9 @@ roleRef:
   kind: ClusterRole
   name: cic-operator-proxy-role
 subjects:
-  - kind: ServiceAccount
-    name: cic-operator-controller-manager
-    namespace: cic-operator-system
+- kind: ServiceAccount
+  name: cic-operator-controller-manager
+  namespace: cic-operator-system
 ---
 apiVersion: v1
 data:
@@ -251,10 +251,10 @@ metadata:
   namespace: cic-operator-system
 spec:
   ports:
-    - name: https
-      port: 8443
-      protocol: TCP
-      targetPort: https
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
   selector:
     control-plane: controller-manager
 ---
@@ -265,7 +265,7 @@ metadata:
   namespace: cic-operator-system
 data:
   config: |
-    CERTIFICATE GOES HERE
+    FILL_IN
 ---
 apiVersion: v1
 kind: Secret
@@ -274,10 +274,10 @@ metadata:
   namespace: cic-operator-system
 type: Opaque
 stringData:
-  username: "FILL IN"
-  password: "FILL IN"
+  username: "FILL_IN"
+  password: "FILL_IN"
   identity_api_version: "3"
-  auth_url: "FILL IN"
+  auth_url: "FILL_IN"
   region_name: "RegionOne"
   project_domain_name: "Default"
   project_name: "ibm-default"
@@ -304,113 +304,113 @@ spec:
         control-plane: controller-manager
     spec:
       containers:
-        - args:
-            - --secure-listen-address=0.0.0.0:8443
-            - --upstream=http://127.0.0.1:8080/
-            - --logtostderr=true
-            - --v=0
-          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.8.0
-          name: kube-rbac-proxy
-          ports:
-            - containerPort: 8443
-              name: https
-              protocol: TCP
-          resources:
-            limits:
-              cpu: 500m
-              memory: 128Mi
-            requests:
-              cpu: 5m
-              memory: 64Mi
-        - args:
-            - --health-probe-bind-address=:8081
-            - --metrics-bind-address=127.0.0.1:8080
-            - --leader-elect
-          command:
-            - /manager
-          image: quay.io/kabhat/cic-operator
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8081
-            initialDelaySeconds: 15
-            periodSeconds: 20
-          name: manager
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: 8081
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          resources:
-            limits:
-              cpu: 500m
-              memory: 128Mi
-            requests:
-              cpu: 10m
-              memory: 64Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-          env:
-            - name: OS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: username
-                  optional: false
-            - name: OS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: password
-                  optional: false
-            - name: OS_IDENTITY_API_VERSION
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: identity_api_version
-                  optional: false
-            - name: OS_AUTH_URL
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: auth_url
-                  optional: false
-            - name: OS_REGION_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: region_name
-                  optional: false
-            - name: OS_PROJECT_DOMAIN_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: project_domain_name
-                  optional: false
-            - name: OS_PROJECT_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: project_name
-                  optional: false
-            - name: OS_TENANT_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: tenant_name
-                  optional: false
-            - name: OS_USER_DOMAIN_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: cic-credentials
-                  key: user_domain_name
-                  optional: false
-            - name: OS_CACERT
-              value: /etc/cic/config
-          volumeMounts:
-            - mountPath: /etc/cic
-              name: cacert-conf
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=0
+        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.8.0
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 5m
+            memory: 64Mi
+      - args:
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address=127.0.0.1:8080
+        - --leader-elect
+        command:
+        - /manager
+        image: quay.io/kabhat/cic-operator
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+        env:
+          - name: OS_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: username
+                optional: false
+          - name: OS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: password
+                optional: false
+          - name: OS_IDENTITY_API_VERSION
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: identity_api_version
+                optional: false
+          - name: OS_AUTH_URL
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: auth_url
+                optional: false
+          - name: OS_REGION_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: region_name
+                optional: false
+          - name: OS_PROJECT_DOMAIN_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: project_domain_name
+                optional: false
+          - name: OS_PROJECT_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: project_name
+                optional: false
+          - name: OS_TENANT_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: tenant_name
+                optional: false
+          - name: OS_USER_DOMAIN_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cic-credentials
+                key: user_domain_name
+                optional: false
+          - name: OS_CACERT
+            value: /etc/cic/config
+        volumeMounts:
+          - mountPath: /etc/cic
+            name: cacert-conf
       securityContext:
         runAsNonRoot: true
       serviceAccountName: cic-operator-controller-manager
